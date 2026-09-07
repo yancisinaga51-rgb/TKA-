@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TKA Biologi — Uji Kompetensi Literasi Numerasi</title>
+<style>
+  :root{
+    --paper:#F5F2EA;
+    --ink:#20301F;
+    --forest:#1F3D2B;
+    --leaf:#4C7A52;
+    --leaf-light:#DCE8DA;
+    --amber:#B8863A;
+    --correct:#3F7D53;
+    --wrong:#AD4E3A;
+    --line:#C9C3B2;
+    --card:#FFFFFF;
+    --font-head: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --font-body: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:20px 18px 60px;}
+
+  /* ---- Top status bar ---- */
+  .statusbar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .statusbar .cell{
+    background:var(--card);
+    padding:10px 14px;
+  }
+  .statusbar .cell .lbl{
+    font-size:11px;
+    color:var(--leaf);
+    letter-spacing:.02em;
+    margin-bottom:2px;
+  }
+  .statusbar .cell .val{
+    font-family:var(--font-head);
+    font-size:16px;
+    color:var(--forest);
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* ---- Header ---- */
+  header h1{
+    font-family:var(--font-head);
+    font-size:28px;
+    margin:0 0 4px;
+    color:var(--forest);
+  }
+  header p.sub{margin:0 0 20px;color:#5B6B57;font-size:14.5px;max-width:60ch;}
+
+  /* ---- Start screen ---- */
+  .start-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px 26px;
+  }
+  .start-card h2{font-family:var(--font-head);font-size:20px;margin:0 0 14px;color:var(--forest);}
+  label{display:block;font-size:13.5px;color:var(--leaf);margin:14px 0 5px;}
+  input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    font-size:15px;
+    font-family:var(--font-body);
+    background:#FCFBF8;
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--leaf);outline-offset:1px;border-color:var(--leaf);}
+  .info-list{margin:20px 0 4px;padding:14px 16px;background:var(--leaf-light);border-radius:10px;font-size:13.5px;color:var(--forest);}
+  .info-list div{margin:3px 0;}
+
+  button{
+    font-family:var(--font-body);
+    cursor:pointer;
+  }
+  .btn-primary{
+    margin-top:20px;
+    width:100%;
+    padding:13px 16px;
+    background:var(--forest);
+    color:#F5F2EA;
+    border:none;
+    border-radius:9px;
+    font-size:15.5px;
+    font-weight:600;
+    letter-spacing:.01em;
+  }
+  .btn-primary:disabled{background:#9CA79A;cursor:not-allowed;}
+  .btn-primary:hover:not(:disabled){background:#294D34;}
+
+  /* ---- Quiz screen ---- */
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .progress-track{flex:1;height:6px;border-radius:4px;background:#E4DFD1;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--leaf);transition:width .25s ease;}
+  .progress-text{font-size:12.5px;color:var(--leaf);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 24px 20px;
+  }
+  .qtopic{font-size:12px;color:var(--amber);margin-bottom:8px;font-weight:600;}
+  .qtext{font-family:var(--font-head);font-size:18px;color:var(--forest);margin:0 0 18px;white-space:pre-line;}
+
+  .option{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    margin-bottom:9px;
+    cursor:pointer;
+    background:#FCFBF8;
+    transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--leaf);}
+  .option .tag{
+    flex:0 0 auto;
+    width:24px;height:24px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:700;color:var(--forest);
+    background:#fff;
+  }
+  .option .txt{font-size:14.5px;color:var(--ink);padding-top:2px;}
+  .option.selected{border-color:var(--forest);background:var(--leaf-light);}
+  .option.selected .tag{background:var(--forest);color:#fff;border-color:var(--forest);}
+
+  .option.correct{border-color:var(--correct);background:#E7F2E9;}
+  .option.correct .tag{background:var(--correct);color:#fff;border-color:var(--correct);}
+  .option.wrong{border-color:var(--wrong);background:#F7E9E5;}
+  .option.wrong .tag{background:var(--wrong);color:#fff;border-color:var(--wrong);}
+  .option.disabled{cursor:default;}
+
+  .explain{
+    margin-top:14px;
+    padding:12px 14px;
+    border-radius:9px;
+    background:#F1EFE6;
+    font-size:13.5px;
+    color:#43503F;
+    border-left:3px solid var(--amber);
+    display:none;
+  }
+  .explain.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;gap:10px;margin-top:18px;}
+  .btn-ghost{
+    padding:11px 18px;
+    background:transparent;
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    font-size:14.5px;
+    color:var(--forest);
+  }
+  .btn-ghost:hover{border-color:var(--forest);}
+  .btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-next{
+    padding:11px 22px;
+    background:var(--forest);
+    border:none;
+    border-radius:9px;
+    font-size:14.5px;
+    color:#fff;
+    font-weight:600;
+  }
+  .btn-next:disabled{background:#B9C2B6;cursor:not-allowed;}
+  .btn-next:hover:not(:disabled){background:#294D34;}
+
+  /* ---- Result screen ---- */
+  .result-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 26px;text-align:center;}
+  .result-score{font-family:var(--font-head);font-size:52px;color:var(--forest);margin:6px 0;}
+  .result-sub{color:#5B6B57;font-size:14.5px;margin-bottom:20px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 6px;}
+  .stat-grid .stat{background:var(--leaf-light);border-radius:10px;padding:12px 6px;}
+  .stat-grid .stat .n{font-family:var(--font-head);font-size:22px;color:var(--forest);}
+  .stat-grid .stat .l{font-size:11.5px;color:var(--leaf);}
+  .review-list{text-align:left;margin-top:24px;}
+  .review-item{border-top:1px solid var(--line);padding:10px 2px;font-size:13.5px;display:flex;gap:8px;}
+  .review-item .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;margin-top:6px;}
+  .dot.ok{background:var(--correct);}
+  .dot.no{background:var(--wrong);}
+
+  .hidden{display:none !important;}
+
+  @media(max-width:480px){
+    .statusbar{grid-template-columns:1fr;}
+    .qtext{font-size:16.5px;}
+    .result-score{font-size:42px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="statusbar">
+    <div class="cell"><div class="lbl">Nama</div><div class="val" id="barNama">—</div></div>
+    <div class="cell"><div class="lbl">Kelas</div><div class="val" id="barKelas">—</div></div>
+    <div class="cell"><div class="lbl">Waktu mulai ujian</div><div class="val" id="barMulai">—</div></div>
+    <div class="cell"><div class="lbl">Lama ujian berjalan</div><div class="val" id="barDurasi">00:00:00</div></div>
+  </div>
+
+  <header>
+    <h1>TKA Biologi — Literasi &amp; Numerasi</h1>
+    <p class="sub">60 soal pilihan ganda (5 opsi) bergaya Tes Kompetensi Akademik / Ujian Nasional / OSN &amp; POSI, mencakup materi dari kelas X sampai XII.</p>
+  </header>
+
+  <!-- START SCREEN -->
+  <section id="screenStart" class="start-card">
+    <h2>Sebelum mulai, isi data peserta</h2>
+    <label for="inpNama">Nama lengkap</label>
+    <input type="text" id="inpNama" placeholder="Contoh: Siti Aminah">
+    <label for="inpKelas">Kelas</label>
+    <input type="text" id="inpKelas" placeholder="Contoh: XII IPA 3">
+    <div class="info-list">
+      <div>• 60 soal, 5 pilihan jawaban (A–E)</div>
+      <div>• Waktu mulai dan lama pengerjaan tercatat otomatis di bar atas</div>
+      <div>• Pembahasan singkat muncul setelah menjawab tiap soal</div>
+      <div>• Tidak ada batas waktu — kerjakan dengan cermat</div>
+    </div>
+    <button class="btn-primary" id="btnStart" disabled>Mulai Ujian</button>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="screenQuiz" class="hidden">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Soal 1 / 60</div>
+    </div>
+    <div class="qcard">
+      <div class="qtopic" id="qTopic">Topik</div>
+      <p class="qtext" id="qText">...</p>
+      <div id="qOptions"></div>
+      <div class="explain" id="qExplain"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-ghost" id="btnPrev">← Sebelumnya</button>
+      <button class="btn-next" id="btnNext" disabled>Soal berikutnya →</button>
+    </div>
+  </section>
+
+  <!-- RESULT SCREEN -->
+  <section id="screenResult" class="hidden result-card">
+    <div style="font-size:13.5px;color:var(--leaf);">Hasil ujian</div>
+    <div class="result-score"><span id="resScore">0</span>/60</div>
+    <div class="result-sub" id="resSub">—</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="resBenar">0</div><div class="l">BENAR</div></div>
+      <div class="stat"><div class="n" id="resSalah">0</div><div class="l">SALAH</div></div>
+      <div class="stat"><div class="n" id="resWaktu">00:00:00</div><div class="l">DURASI</div></div>
+    </div>
+    <div class="review-list" id="reviewList"></div>
+  </section>
+
+</div>
+
+<script>
+/* ================== DATA SOAL ================== */
+const QUESTIONS = [
+// ---------- 1. RUANG LINGKUP BIOLOGI & METODE ILMIAH ----------
+{topic:"Metode Ilmiah", q:"Seorang siswa merendam potongan kentang berukuran sama ke dalam larutan gula dengan konsentrasi berbeda selama 1 jam, lalu mencatat perubahan massanya:\n0% → +0,8 g | 5% → +0,3 g | 10% → 0,0 g | 15% → −0,4 g | 20% → −0,9 g\nBerdasarkan data tersebut, larutan yang bersifat isotonik terhadap cairan sel kentang mendekati konsentrasi...",
+ options:["0%","5%","10%","15%","20%"], correct:2,
+ explain:"Isotonik ditandai tidak adanya perpindahan air neto, sehingga massa kentang relatif tidak berubah (≈0 g), yaitu pada konsentrasi 10%."},
+
+{topic:"Metode Ilmiah", q:"Pada percobaan osmosis kentang di atas, variabel bebas (yang sengaja diubah oleh peneliti) adalah...",
+ options:["Massa awal kentang","Konsentrasi larutan gula","Lama waktu perendaman","Perubahan massa kentang","Suhu ruangan"], correct:1,
+ explain:"Variabel bebas adalah faktor yang diubah-ubah peneliti, yaitu konsentrasi larutan gula. Perubahan massa adalah variabel terikat (hasil pengamatan)."},
+
+{topic:"Metode Ilmiah", q:"Kesimpulan yang paling tepat didukung oleh data percobaan kentang tersebut adalah...",
+ options:[
+   "Semakin tinggi konsentrasi gula di luar sel, semakin banyak air yang keluar dari sel sehingga massa kentang menurun",
+   "Semakin tinggi konsentrasi gula, semakin banyak gula yang masuk ke dalam sel kentang",
+   "Massa kentang tidak dipengaruhi oleh konsentrasi larutan di sekitarnya",
+   "Kentang bersifat impermeabel terhadap air pada semua konsentrasi",
+   "Larutan gula menyebabkan kentang mengalami plasmolisis pada semua konsentrasi"
+ ], correct:0,
+ explain:"Pada larutan hipertonik (>10%), air keluar dari sel secara osmosis sehingga massa kentang berkurang; polanya konsisten dengan hukum osmosis."},
+
+// ---------- 2. KEANEKARAGAMAN HAYATI ----------
+{topic:"Keanekaragaman Hayati", q:"Survei pada satu petak lahan mencatat lima spesies tumbuhan dengan jumlah individu: A=40, B=30, C=20, D=8, E=2 (total 100 individu). Spesies yang mendominasi komunitas tersebut dan frekuensi relatifnya adalah...",
+ options:["Spesies E, 2%","Spesies D, 8%","Spesies C, 20%","Spesies B, 30%","Spesies A, 40%"], correct:4,
+ explain:"Frekuensi relatif = (jumlah individu spesies ÷ total individu) × 100%. Spesies A memiliki 40/100 × 100% = 40%, tertinggi sehingga paling dominan."},
+
+{topic:"Keanekaragaman Hayati", q:"Padi varietas IR64, Rojolele, dan Cisadane menunjukkan perbedaan bentuk bulir, tekstur nasi, dan masa panen meski berasal dari spesies yang sama (Oryza sativa). Fenomena ini merupakan contoh keanekaragaman hayati tingkat...",
+ options:["Ekosistem","Populasi","Gen","Jenis (spesies)","Bioma"], correct:2,
+ explain:"Variasi antarvarietas dalam satu spesies disebabkan oleh perbedaan susunan gen, sehingga tergolong keanekaragaman tingkat gen."},
+
+{topic:"Keanekaragaman Hayati", q:"Anoa, komodo, dan burung maleo merupakan fauna endemik Indonesia yang tersebar di wilayah...",
+ options:["Sumatra dan Kalimantan (tipe Asiatis)","Papua (tipe Australis)","Sulawesi dan sekitarnya (tipe peralihan/Wallacea)","Jawa dan Bali","Kepulauan Maluku bagian utara"], correct:2,
+ explain:"Anoa, komodo, dan maleo adalah fauna khas kawasan Wallacea (peralihan), yang terletak di antara Garis Wallace dan Garis Weber."},
+
+{topic:"Keanekaragaman Hayati", q:"Garis Wallace pada peta persebaran fauna Indonesia memisahkan wilayah fauna...",
+ options:[
+   "Asiatis dan peralihan",
+   "Peralihan dan Australis",
+   "Asiatis dan Australis secara langsung tanpa zona peralihan",
+   "Jawa dan Sumatra",
+   "Papua dan Maluku"
+ ], correct:0,
+ explain:"Garis Wallace membatasi wilayah fauna Asiatis (Sumatra, Jawa, Kalimantan) dengan wilayah peralihan (Sulawesi, Nusa Tenggara); Garis Weber memisahkan wilayah peralihan dengan Australis."},
+
+{topic:"Keanekaragaman Hayati", q:"Suatu kawasan memiliki curah hujan tahunan 200–500 mm dengan suhu siang sangat tinggi dan fluktuasi suhu harian ekstrem. Bioma yang sesuai dengan kondisi tersebut adalah...",
+ options:["Hutan hujan tropis","Tundra","Gurun","Taiga","Sabana"], correct:2,
+ explain:"Curah hujan sangat rendah (<250 mm/tahun umumnya) dan fluktuasi suhu harian besar merupakan ciri khas bioma gurun."},
+
+{topic:"Keanekaragaman Hayati", q:"Pelestarian badak Jawa yang dilakukan tetap di habitat aslinya, yaitu Taman Nasional Ujung Kulon, merupakan contoh konservasi...",
+ options:["Ex-situ","In-situ","Domestikasi","Kultur jaringan","Bank plasma nutfah"], correct:1,
+ explain:"Konservasi in-situ dilakukan di habitat alami spesies tersebut, berbeda dengan ex-situ yang memindahkan organisme keluar dari habitat aslinya (misalnya kebun binatang)."},
+
+// ---------- 3. KLASIFIKASI & VIRUS ----------
+{topic:"Klasifikasi Makhluk Hidup", q:"Carl Woese mengusulkan sistem tiga domain yang memisahkan makhluk hidup menjadi Archaea, Bacteria, dan Eukarya, menggantikan sistem lima kingdom Whittaker. Dasar utama pengelompokan sistem tiga domain tersebut adalah...",
+ options:["Bentuk tubuh","Cara memperoleh makanan","Perbedaan struktur RNA ribosom (rRNA)","Habitat hidup","Jumlah sel penyusun tubuh"], correct:2,
+ explain:"Woese mengelompokkan berdasarkan perbedaan urutan rRNA subunit kecil, yang mencerminkan kekerabatan evolusioner lebih akurat daripada ciri morfologi."},
+
+{topic:"Virus", q:"Virus dianggap berada di ambang antara benda mati dan makhluk hidup karena...",
+ options:[
+   "Virus dapat bergerak sendiri di udara",
+   "Virus memiliki dinding sel dari peptidoglikan",
+   "Virus hanya dapat memperbanyak diri (bereplikasi) di dalam sel inang hidup",
+   "Virus tidak memiliki materi genetik",
+   "Virus dapat berfotosintesis pada kondisi gelap"
+ ], correct:2,
+ explain:"Virus tidak memiliki organel dan metabolisme sendiri sehingga hanya dapat bereplikasi menggunakan mesin sel inang, itulah sebabnya statusnya diperdebatkan."},
+
+{topic:"Virus", q:"Urutan tahapan yang benar dalam siklus litik virus adalah...",
+ options:[
+   "Adsorpsi – penetrasi – sintesis – perakitan – lisis",
+   "Penetrasi – lisis – adsorpsi – sintesis – perakitan",
+   "Sintesis – adsorpsi – penetrasi – lisis – perakitan",
+   "Lisis – perakitan – sintesis – penetrasi – adsorpsi",
+   "Adsorpsi – sintesis – penetrasi – lisis – perakitan"
+ ], correct:0,
+ explain:"Siklus litik: adsorpsi (penempelan) → penetrasi (injeksi materi genetik) → sintesis (replikasi komponen virus) → perakitan (assembly) → lisis (pecahnya sel inang)."},
+
+{topic:"Klasifikasi Makhluk Hidup", q:"Penulisan nama ilmiah yang benar menurut sistem binomial nomenclature untuk padi adalah...",
+ options:["oryza sativa","Oryza Sativa","Oryza sativa","ORYZA SATIVA","Oryza. sativa"], correct:2,
+ explain:"Aturan binomial: kata pertama (genus) diawali huruf kapital, kata kedua (penunjuk spesies) huruf kecil semua, dan keduanya dicetak miring/digarisbawahi terpisah."},
+
+{topic:"Virus", q:"Virus HIV (Human Immunodeficiency Virus) menyerang sel target berupa...",
+ options:["Sel darah merah","Sel hati","Sel limfosit T (CD4)","Sel saraf motorik","Sel epitel paru-paru"], correct:2,
+ explain:"HIV menginfeksi limfosit T-helper (CD4), sehingga melemahkan sistem imun tubuh dan menyebabkan AIDS."},
+
+{topic:"Klasifikasi Makhluk Hidup", q:"Urutan takson dari tingkatan paling umum ke paling khusus yang benar adalah...",
+ options:[
+   "Spesies – Genus – Famili – Ordo – Kelas – Filum – Kingdom",
+   "Kingdom – Filum – Kelas – Ordo – Famili – Genus – Spesies",
+   "Kingdom – Kelas – Filum – Famili – Ordo – Genus – Spesies",
+   "Filum – Kingdom – Ordo – Kelas – Famili – Spesies – Genus",
+   "Kingdom – Filum – Ordo – Kelas – Famili – Genus – Spesies"
+ ], correct:1,
+ explain:"Urutan takson standar: Kingdom → Filum (Divisio) → Kelas → Ordo → Famili → Genus → Spesies."},
+
+// ---------- 4. MONERA ----------
+{topic:"Monera (Bakteri)", q:"Pada uji pewarnaan Gram, bakteri gram positif akan tampak berwarna ungu karena...",
+ options:[
+   "Dinding selnya tipis sehingga menyerap zat warna safranin",
+   "Dinding selnya mengandung lapisan peptidoglikan tebal yang mengikat kristal violet",
+   "Bakteri tersebut tidak memiliki dinding sel",
+   "Membran selnya mengandung lipopolisakarida tebal",
+   "Bakteri tersebut bersifat anaerob obligat"
+ ], correct:1,
+ explain:"Lapisan peptidoglikan tebal pada gram positif mempertahankan kompleks kristal violet-iodin sehingga tetap berwarna ungu setelah pencucian alkohol."},
+
+{topic:"Monera (Bakteri)", q:"Suatu spesies bakteri memiliki waktu generasi (waktu pembelahan biner) 20 menit. Jika dimulai dari 1 sel bakteri, perkiraan jumlah sel setelah 2 jam adalah...",
+ options:["12 sel","32 sel","64 sel","128 sel","256 sel"], correct:2,
+ explain:"2 jam = 120 menit, sehingga jumlah generasi = 120/20 = 6 kali pembelahan. Jumlah sel = 2^6 = 64 sel."},
+
+{topic:"Monera (Archaebacteria)", q:"Kelompok Archaebacteria yang mampu hidup pada kadar garam sangat tinggi, misalnya di danau garam, disebut...",
+ options:["Metanogen","Termoasidofil","Halofil ekstrem","Psikrofil","Nitrifikasi"], correct:2,
+ explain:"Halofil ekstrem adalah archaea yang beradaptasi hidup pada lingkungan berkadar garam sangat tinggi."},
+
+{topic:"Monera (Bakteri)", q:"Bakteri Rhizobium yang hidup bersimbiosis pada bintil akar tanaman kacang-kacangan berperan penting dalam...",
+ options:[
+   "Menghasilkan antibiotik bagi tanaman",
+   "Memfiksasi nitrogen bebas (N2) dari udara menjadi bentuk yang dapat diserap tanaman",
+   "Menguraikan selulosa pada akar",
+   "Menghambat pertumbuhan gulma di sekitar akar",
+   "Membantu fotosintesis pada akar"
+ ], correct:1,
+ explain:"Rhizobium mengubah N2 di udara menjadi senyawa nitrogen (misalnya amonium) yang dapat dimanfaatkan tumbuhan inang, suatu bentuk mutualisme."},
+
+{topic:"Monera (Bakteri)", q:"Penyakit tuberkulosis (TBC) pada manusia disebabkan oleh bakteri...",
+ options:["Salmonella typhi","Mycobacterium tuberculosis","Vibrio cholerae","Clostridium tetani","Escherichia coli"], correct:1,
+ explain:"TBC disebabkan oleh infeksi Mycobacterium tuberculosis yang menyerang terutama paru-paru."},
+
+// ---------- 5. PROTISTA ----------
+{topic:"Protista", q:"Protista mirip hewan (Protozoa) yang bergerak menggunakan kaki semu (pseudopodia) dikelompokkan ke dalam filum...",
+ options:["Ciliophora","Flagellata (Mastigophora)","Rhizopoda (Sarcodina)","Sporozoa (Apicomplexa)","Foraminifera saja"], correct:2,
+ explain:"Rhizopoda/Sarcodina bergerak dan menangkap makanan menggunakan kaki semu, contohnya Amoeba."},
+
+{topic:"Protista", q:"Alga yang mengandung pigmen dominan fikoeritrin (merah) sehingga digolongkan sebagai Rhodophyta adalah...",
+ options:["Ganggang hijau (Chlorophyta)","Ganggang cokelat (Phaeophyta)","Ganggang merah (Rhodophyta) seperti Eucheuma","Ganggang keemasan (Chrysophyta)","Ganggang api (Pyrrophyta)"], correct:2,
+ explain:"Rhodophyta memiliki pigmen fikoeritrin yang dominan, memberikan warna merah, contohnya Eucheuma spinosum penghasil agar-agar/karagenan."},
+
+{topic:"Protista", q:"Protista mirip jamur dari kelompok Oomycota yang menyebabkan penyakit busuk pada tanaman kentang adalah...",
+ options:["Saccharomyces cerevisiae","Phytophthora infestans","Rhizopus stolonifer","Aspergillus niger","Volvariella volvacea"], correct:1,
+ explain:"Phytophthora infestans (Oomycota) menyebabkan penyakit late blight/busuk daun pada tanaman kentang dan tomat."},
+
+{topic:"Protista", q:"Fase Plasmodium yang tertular ke dalam tubuh manusia melalui gigitan nyamuk Anopheles betina adalah...",
+ options:["Merozoit","Sporozoit","Gametosit","Ookista","Tropozoit"], correct:1,
+ explain:"Nyamuk Anopheles menyuntikkan sporozoit ke aliran darah manusia, yang kemudian menuju hati dan berkembang menjadi merozoit."},
+
+{topic:"Protista", q:"Fitoplankton di lautan berperan sebagai produsen utama karena mampu berfotosintesis. Jika biomassa fitoplankton di suatu perairan adalah 10.000 kg dan efisiensi transfer energi antartingkat trofik sekitar 10%, perkiraan biomassa zooplankton (konsumen I) yang dapat didukung adalah...",
+ options:["100 kg","1.000 kg","5.000 kg","10.000 kg","100.000 kg"], correct:1,
+ explain:"Dengan hukum 10%, energi/biomassa yang berpindah ke tingkat trofik berikutnya sekitar 10% dari tingkat sebelumnya: 10% × 10.000 kg = 1.000 kg."},
+
+// ---------- 6. FUNGI ----------
+{topic:"Fungi", q:"Jamur tempe (Rhizopus oryzae) yang membentuk spora seksual berupa zigospora dikelompokkan dalam divisi...",
+ options:["Ascomycota","Basidiomycota","Zygomycota","Deuteromycota","Glomeromycota"], correct:2,
+ explain:"Zygomycota bereproduksi seksual dengan membentuk zigospora hasil peleburan hifa (+) dan (−), contohnya Rhizopus."},
+
+{topic:"Fungi", q:"Kumpulan benang-benang halus penyusun tubuh jamur yang disebut hifa, jika bergabung membentuk struktur yang disebut...",
+ options:["Miselium","Basidium","Askus","Konidium","Sporangium"], correct:0,
+ explain:"Miselium adalah kumpulan/anyaman hifa yang membentuk tubuh jamur secara keseluruhan."},
+
+{topic:"Fungi", q:"Lumut kerak (lichenes) merupakan hasil simbiosis mutualisme antara jamur dengan...",
+ options:["Bakteri Rhizobium","Protozoa","Alga hijau atau cyanobacteria","Virus","Tumbuhan lumut sejati"], correct:2,
+ explain:"Lichenes terbentuk dari simbiosis antara fungi (biasanya Ascomycota) dengan alga hijau atau cyanobacteria yang berfotosintesis."},
+
+{topic:"Fungi", q:"Aspergillus flavus yang tumbuh pada biji-bijian yang lembap berbahaya bagi manusia karena menghasilkan...",
+ options:["Antibiotik penisilin","Alkohol etanol","Racun aflatoksin yang bersifat karsinogenik","Asam sitrat","Enzim protease untuk penyamakan kulit"], correct:2,
+ explain:"Aspergillus flavus menghasilkan aflatoksin, mikotoksin yang bersifat karsinogenik dan berbahaya jika termakan dalam jumlah tertentu."},
+
+{topic:"Fungi", q:"Mikoriza merupakan simbiosis mutualisme antara jamur dengan akar tumbuhan, di mana keuntungan bagi tumbuhan inang adalah...",
+ options:[
+   "Terlindung dari herbivora besar",
+   "Peningkatan penyerapan air dan mineral (terutama fosfat) dari tanah",
+   "Peningkatan laju fotosintesis secara langsung",
+   "Perlindungan dari infeksi virus",
+   "Percepatan pembentukan bunga"
+ ], correct:1,
+ explain:"Hifa jamur mikoriza memperluas jangkauan penyerapan air dan mineral (khususnya fosfat) bagi akar tumbuhan, sedangkan jamur mendapat senyawa organik hasil fotosintesis."},
+
+// ---------- 7. PLANTAE ----------
+{topic:"Plantae", q:"Tumbuhan yang belum memiliki jaringan pembuluh angkut (xilem dan floem) sejati adalah kelompok...",
+ options:["Pteridophyta (paku)","Bryophyta (lumut)","Gymnospermae","Angiospermae monokotil","Angiospermae dikotil"], correct:1,
+ explain:"Bryophyta (lumut) tergolong tumbuhan non-vaskular karena belum memiliki xilem dan floem sejati untuk mengangkut air dan hasil fotosintesis."},
+
+{topic:"Plantae", q:"Pada daur hidup tumbuhan lumut, fase yang dominan dan berumur lebih panjang adalah fase...",
+ options:["Sporofit","Gametofit","Zigot","Protalium","Sporangium"], correct:1,
+ explain:"Pada lumut, gametofit (tumbuhan lumut yang kita lihat sehari-hari, haploid) adalah fase dominan, berbeda dengan paku dan tumbuhan berbiji yang sporofitnya dominan."},
+
+{topic:"Plantae", q:"Ciri khas yang membedakan Gymnospermae dari Angiospermae adalah...",
+ options:[
+   "Gymnospermae memiliki bunga sejati, Angiospermae tidak",
+   "Biji Gymnospermae tidak dibungkus oleh daun buah (bakal biji terbuka)",
+   "Gymnospermae tidak memiliki akar sejati",
+   "Angiospermae tidak mengalami pembuahan ganda",
+   "Gymnospermae hanya hidup di air"
+ ], correct:1,
+ explain:"Pada Gymnospermae, bakal biji tidak terlindungi oleh daun buah (ovarium) sehingga disebut berbiji terbuka, berbeda dengan Angiospermae yang bijinya tertutup di dalam buah."},
+
+{topic:"Plantae", q:"Tumbuhan dengan ciri akar serabut, tulang daun sejajar, dan bagian bunga berkelipatan tiga termasuk kelompok...",
+ options:["Dikotil","Monokotil","Gymnospermae","Bryophyta","Pteridophyta"], correct:1,
+ explain:"Akar serabut, tulang daun sejajar/melengkung, dan kelipatan bunga tiga merupakan ciri khas tumbuhan monokotil, misalnya jagung dan padi."},
+
+{topic:"Plantae", q:"Dalam reaksi terang dan reaksi gelap (siklus Calvin) fotosintesis, untuk menghasilkan 1 molekul glukosa (C6H12O6) diperlukan sekitar...",
+ options:["6 ATP dan 6 NADPH","12 ATP dan 6 NADPH","18 ATP dan 12 NADPH","24 ATP dan 18 NADPH","6 ATP dan 12 NADPH"], correct:2,
+ explain:"Siklus Calvin membutuhkan total 18 ATP dan 12 NADPH untuk memfiksasi 6 molekul CO2 menjadi 1 molekul glukosa."},
+
+{topic:"Plantae", q:"Jaringan tumbuhan yang sel-selnya aktif membelah terus-menerus dan bertanggung jawab atas pertumbuhan memanjang pada ujung akar dan batang adalah jaringan...",
+ options:["Parenkim","Kolenkim","Epidermis","Meristem apikal","Sklerenkim"], correct:3,
+ explain:"Meristem apikal terletak di ujung akar dan batang, sel-selnya bersifat embrionik dan aktif membelah, menyebabkan pertumbuhan primer (memanjang)."},
+
+// ---------- 8. ANIMALIA ----------
+{topic:"Animalia", q:"Hewan yang memiliki tubuh berpori (ostium) dan hidup menetap (sesil) di dasar perairan digolongkan dalam filum...",
+ options:["Coelenterata","Porifera","Platyhelminthes","Annelida","Echinodermata"], correct:1,
+ explain:"Porifera (hewan berpori) memiliki banyak pori-pori (ostium) di permukaan tubuh untuk mengalirkan air, dan umumnya hidup sesil menempel di substrat."},
+
+{topic:"Animalia", q:"Hewan vertebrata yang bersifat poikiloterm (berdarah dingin), bernapas dengan paru-paru, dan bertelur bercangkang tergolong kelas...",
+ options:["Pisces","Amphibia","Reptilia","Aves","Mammalia"], correct:2,
+ explain:"Reptilia bersifat poikiloterm, bernapas dengan paru-paru sepanjang hidupnya, dan telurnya memiliki cangkang, berbeda dengan amfibi yang telurnya tanpa cangkang."},
+
+{topic:"Animalia", q:"Kupu-kupu mengalami metamorfosis sempurna dengan urutan tahapan...",
+ options:[
+   "Telur – nimfa – imago",
+   "Telur – larva – pupa – imago",
+   "Telur – pupa – larva – imago",
+   "Larva – telur – pupa – imago",
+   "Telur – nimfa – pupa – imago"
+ ], correct:1,
+ explain:"Metamorfosis sempurna (holometabola) pada kupu-kupu: telur → larva (ulat) → pupa (kepompong) → imago (dewasa)."},
+
+{topic:"Animalia", q:"Manusia dapat terinfeksi cacing pita (Taenia saginata) melalui...",
+ options:[
+   "Menghirup telur cacing dari udara",
+   "Mengonsumsi daging sapi setengah matang yang mengandung sistiserkus",
+   "Kontak langsung dengan kulit penderita",
+   "Gigitan nyamuk yang membawa larva cacing",
+   "Meminum air yang mengandung mirasidium"
+ ], correct:1,
+ explain:"Taenia saginata (cacing pita sapi) menular ke manusia bila memakan daging sapi mentah/kurang matang yang mengandung larva sistiserkus."},
+
+{topic:"Animalia", q:"Sistem peredaran darah terbuka, yaitu darah tidak selalu mengalir di dalam pembuluh, ditemukan pada kelompok hewan...",
+ options:["Mamalia dan burung","Ikan dan amfibi","Reptil dan burung","Arthropoda dan sebagian besar Mollusca","Annelida dan Echinodermata"], correct:3,
+ explain:"Arthropoda (misalnya serangga) dan sebagian besar Mollusca memiliki sistem peredaran darah terbuka, di mana darah (hemolimfe) sempat mengalir bebas di rongga tubuh (hemocoel)."},
+
+{topic:"Animalia", q:"Seekor lalat buah menghasilkan rata-rata 100 telur per generasi, dan setiap generasi berlangsung selama 10 hari (diasumsikan semua telur menetas dan bertahan hidup). Jika dimulai dari 1 pasang lalat, perkiraan jumlah individu setelah 2 generasi (20 hari) adalah...",
+ options:["100 individu","200 individu","1.000 individu","10.000 individu","100.000 individu"], correct:3,
+ explain:"Generasi 1: 1 pasang → 100 keturunan. Generasi 2: masing-masing dari (sederhananya) 100 individu tersebut berpotensi menghasilkan 100 keturunan lagi sehingga totalnya mendekati 100 × 100 = 10.000 individu, menggambarkan pertumbuhan populasi yang sangat cepat (eksponensial) pada serangga."},
+
+// ---------- 9. EKOLOGI ----------
+{topic:"Ekologi", q:"Pada suatu ekosistem, energi pada tingkat trofik produsen sebesar 100.000 kkal. Dengan mengikuti hukum transfer energi 10% antartingkat trofik, energi yang tersedia pada tingkat konsumen II (karnivora tingkat 1) adalah...",
+ options:["100.000 kkal","10.000 kkal","1.000 kkal","100 kkal","10 kkal"], correct:2,
+ explain:"Konsumen I menerima 10% dari produsen = 10.000 kkal. Konsumen II menerima 10% dari konsumen I = 10% × 10.000 = 1.000 kkal."},
+
+{topic:"Ekologi", q:"Dalam suatu rantai makanan padi → tikus → ular → elang, jika populasi tikus menurun drastis akibat wabah penyakit, dampak jangka pendek yang paling mungkin terjadi adalah...",
+ options:[
+   "Populasi padi menurun drastis dan populasi elang meningkat",
+   "Populasi ular menurun karena kekurangan makanan, sementara populasi padi cenderung meningkat",
+   "Populasi elang meningkat tajam karena kompetisi berkurang",
+   "Tidak ada dampak karena setiap populasi bersifat independen",
+   "Populasi padi ikut menurun mengikuti populasi tikus"
+ ], correct:1,
+ explain:"Berkurangnya tikus (mangsa ular) menyebabkan ular kekurangan makanan sehingga populasinya cenderung menurun, sedangkan padi (dimakan tikus) berpotensi meningkat karena tekanan herbivora berkurang."},
+
+{topic:"Ekologi", q:"Proses pengembalian karbon ke atmosfer dalam bentuk CO2 melalui pembakaran bahan bakar fosil dan respirasi organisme merupakan bagian dari siklus...",
+ options:["Siklus nitrogen","Siklus karbon","Siklus fosfor","Siklus sulfur","Siklus air"], correct:1,
+ explain:"Siklus karbon melibatkan pertukaran karbon antara atmosfer (CO2), organisme (fotosintesis-respirasi), dan cadangan fosil melalui pembakaran."},
+
+{topic:"Ekologi", q:"Proses pengubahan gas nitrogen bebas (N2) di udara menjadi senyawa nitrogen yang dapat diserap tumbuhan (misalnya amonium) disebut...",
+ options:["Nitrifikasi","Denitrifikasi","Fiksasi nitrogen","Amonifikasi","Asimilasi"], correct:2,
+ explain:"Fiksasi nitrogen adalah proses pengikatan N2 bebas menjadi bentuk senyawa nitrogen, dilakukan oleh bakteri seperti Rhizobium dan Azotobacter."},
+
+{topic:"Ekologi", q:"Hubungan antara bunga anggrek yang menempel pada pohon inang tanpa merugikan maupun menguntungkan pohon tersebut disebut simbiosis...",
+ options:["Mutualisme","Parasitisme","Komensalisme","Predasi","Kompetisi"], correct:2,
+ explain:"Komensalisme adalah interaksi yang menguntungkan satu pihak (anggrek mendapat tempat menempel dan cahaya) tanpa merugikan pihak lain (pohon inang)."},
+
+{topic:"Ekologi", q:"Rusa yang diintroduksi ke sebuah pulau tanpa predator alami menunjukkan pertumbuhan populasi yang mula-mula cepat (eksponensial), lalu melambat dan stabil mendekati daya dukung lingkungan. Pola pertumbuhan populasi seperti ini disebut...",
+ options:["Pertumbuhan eksponensial murni (kurva J)","Pertumbuhan logistik (kurva S)","Pertumbuhan linier","Pertumbuhan negatif","Pertumbuhan fluktuatif acak"], correct:1,
+ explain:"Pola yang mula-mula cepat lalu melambat mendekati daya dukung lingkungan (carrying capacity) merupakan ciri khas kurva pertumbuhan logistik (kurva S)."},
+
+{topic:"Ekologi", q:"Suatu kawasan hutan seluas 5 hektare dihuni oleh 250 individu monyet ekor panjang. Kepadatan populasi monyet tersebut adalah...",
+ options:["5 individu/ha","25 individu/ha","50 individu/ha","125 individu/ha","250 individu/ha"], correct:2,
+ explain:"Kepadatan populasi = jumlah individu ÷ luas area = 250 ÷ 5 = 50 individu per hektare."},
+
+{topic:"Ekologi", q:"Dua habitat disurvei: Habitat X memiliki 4 spesies dengan jumlah individu yang relatif merata (masing-masing ±25%), sedangkan Habitat Y memiliki 4 spesies tetapi satu spesies mendominasi 85% populasi. Pernyataan yang tepat adalah...",
+ options:[
+   "Kedua habitat memiliki indeks keanekaragaman yang sama karena jumlah spesiesnya sama",
+   "Habitat Y memiliki keanekaragaman lebih tinggi karena ada dominasi jelas",
+   "Habitat X memiliki keanekaragaman lebih tinggi karena kemerataan individu antarspesies lebih baik",
+   "Keanekaragaman tidak dapat dibandingkan tanpa data suhu",
+   "Habitat Y pasti lebih stabil daripada Habitat X"
+ ], correct:2,
+ explain:"Indeks keanekaragaman tidak hanya bergantung pada jumlah spesies (kekayaan), tetapi juga kemerataan (evenness). Sebaran individu yang merata pada Habitat X mencerminkan keanekaragaman yang lebih tinggi dibanding Habitat Y yang didominasi satu spesies."},
+
+{topic:"Ekologi", q:"Konsentrasi pestisida DDT dalam suatu rantai makanan perairan tercatat: air 0,00005 ppm → zooplankton 0,04 ppm → ikan kecil 0,5 ppm → ikan besar 2 ppm → burung pemangsa ikan 25 ppm. Fenomena peningkatan konsentrasi zat pencemar pada setiap tingkat trofik yang semakin tinggi ini disebut...",
+ options:["Eutrofikasi","Biomagnifikasi","Suksesi ekologi","Denitrifikasi","Fiksasi biologis"], correct:1,
+ explain:"Biomagnifikasi adalah peningkatan konsentrasi zat pencemar (seperti DDT) yang sulit terurai pada tubuh organisme seiring naiknya tingkat trofik dalam rantai makanan."},
+
+// ---------- 10. PERUBAHAN LINGKUNGAN & PENCEMARAN ----------
+{topic:"Perubahan Lingkungan", q:"Limbah deterjen rumah tangga yang mengandung fosfat tinggi dibuang ke sungai dapat menyebabkan pertumbuhan alga secara berlebihan (blooming), yang pada akhirnya menurunkan kadar oksigen terlarut dan menyebabkan kematian ikan. Peristiwa ini dikenal sebagai...",
+ options:["Biomagnifikasi","Eutrofikasi","Bioremediasi","Efek rumah kaca","Suksesi primer"], correct:1,
+ explain:"Eutrofikasi adalah pengayaan nutrien (terutama nitrat dan fosfat) berlebih di perairan yang memicu blooming alga, diikuti penurunan oksigen terlarut saat alga membusuk (dekomposisi)."},
+
+{topic:"Perubahan Lingkungan", q:"Peningkatan konsentrasi gas rumah kaca seperti CO2 dan metana di atmosfer menyebabkan pemanasan global karena gas-gas tersebut...",
+ options:[
+   "Menyerap dan memantulkan kembali sinar UV ke luar angkasa",
+   "Menghalangi seluruh radiasi matahari masuk ke bumi",
+   "Menyerap radiasi inframerah (panas) yang dipantulkan bumi sehingga terperangkap di atmosfer",
+   "Menurunkan kadar oksigen di atmosfer",
+   "Menciptakan lubang pada lapisan ozon secara langsung"
+ ], correct:2,
+ explain:"Gas rumah kaca menyerap radiasi inframerah yang dipantulkan permukaan bumi dan memancarkannya kembali ke bawah, sehingga panas terperangkap dan suhu global meningkat."},
+
+{topic:"Perubahan Lingkungan", q:"Penggunaan mikroorganisme tertentu, misalnya bakteri pengurai minyak, untuk membersihkan tumpahan minyak di laut disebut...",
+ options:["Bioremediasi","Biomagnifikasi","Bioindikator","Biofortifikasi","Biopestisida"], correct:0,
+ explain:"Bioremediasi adalah pemanfaatan organisme (biasanya mikroorganisme) untuk menguraikan atau menetralkan zat pencemar di lingkungan."},
+
+{topic:"Perubahan Lingkungan", q:"Dokumen kajian yang wajib disusun sebelum suatu proyek pembangunan besar dilaksanakan untuk menilai dampaknya terhadap lingkungan disebut...",
+ options:["SNI","AMDAL","ISO 14000","RTRW","KUHP Lingkungan"], correct:1,
+ explain:"AMDAL (Analisis Mengenai Dampak Lingkungan) adalah kajian dampak penting suatu usaha/kegiatan terhadap lingkungan hidup, wajib bagi proyek berskala besar."},
+
+{topic:"Perubahan Lingkungan", q:"Prinsip 3R dalam pengelolaan sampah terdiri atas Reduce, Reuse, dan Recycle. Contoh tindakan yang termasuk 'Reduce' adalah...",
+ options:[
+   "Mengolah botol plastik bekas menjadi pot tanaman",
+   "Membawa tas belanja sendiri untuk mengurangi penggunaan kantong plastik",
+   "Menggunakan kembali botol kaca untuk wadah air minum",
+   "Mendaur ulang kertas bekas menjadi kertas baru",
+   "Membuang sampah organik ke tempat sampah"
+ ], correct:1,
+ explain:"Reduce berarti mengurangi jumlah timbulan sampah sejak awal, misalnya dengan membawa tas belanja sendiri agar tidak memakai kantong plastik baru."},
+
+// ---------- 11. NUMERASI & LITERASI LINTAS MATERI (level OSN/POSI) ----------
+{topic:"Genetika Populasi", q:"Dalam suatu populasi besar yang berada dalam kesetimbangan Hardy–Weinberg, frekuensi alel resesif (q) untuk suatu sifat adalah 0,2. Persentase individu bergenotipe homozigot resesif dalam populasi tersebut adalah...",
+ options:["2%","4%","16%","20%","32%"], correct:1,
+ explain:"Menurut hukum Hardy–Weinberg, frekuensi genotipe homozigot resesif = q². Dengan q = 0,2, maka q² = 0,04 = 4%."},
+
+{topic:"Genetika Populasi", q:"Menggunakan data pada soal sebelumnya (q = 0,2, sehingga p = 0,8), persentase individu bergenotipe heterozigot (pembawa sifat/karier) dalam populasi tersebut adalah...",
+ options:["4%","16%","32%","64%","80%"], correct:2,
+ explain:"Frekuensi heterozigot = 2pq = 2 × 0,8 × 0,2 = 0,32 = 32%."},
+
+{topic:"Fisiologi Tumbuhan (Grafik)", q:"Grafik hubungan intensitas cahaya dengan laju fotosintesis suatu tumbuhan menunjukkan bahwa pada intensitas cahaya rendah tertentu, jumlah O2 yang dihasilkan dari fotosintesis sama persis dengan jumlah O2 yang digunakan untuk respirasi (tidak ada pertukaran gas neto dengan lingkungan). Titik pada grafik tersebut disebut...",
+ options:["Titik jenuh cahaya","Titik kompensasi cahaya","Titik optimum suhu","Titik saturasi CO2","Titik maksimum stomata"], correct:1,
+ explain:"Titik kompensasi cahaya adalah intensitas cahaya di mana laju fotosintesis sama dengan laju respirasi, sehingga pertukaran gas neto (O2/CO2) dengan lingkungan adalah nol."},
+];
+
+// tambahan literasi (bacaan pendek) sebagai soal ke-60
+QUESTIONS.push({
+ topic:"Literasi Bioteknologi",
+ q:"Bacalah teks berikut.\n\n\"Alexander Fleming secara tidak sengaja menemukan bahwa koloni jamur Penicillium notatum yang mengontaminasi cawan biakan bakterinya mampu menghambat pertumbuhan bakteri Staphylococcus di sekitarnya. Zat yang dihasilkan jamur tersebut kemudian dikembangkan menjadi antibiotik penisilin, yang hingga kini dimanfaatkan secara luas untuk mengobati infeksi bakteri.\"\n\nKesimpulan yang paling tepat berdasarkan teks tersebut adalah...",
+ options:[
+   "Penicillium notatum adalah bakteri yang menghasilkan racun bagi jamur lain",
+   "Antibiotik penisilin bekerja dengan cara membunuh virus penyebab infeksi",
+   "Penisilin merupakan senyawa alami hasil metabolisme jamur yang dapat menghambat pertumbuhan bakteri tertentu",
+   "Staphylococcus adalah jenis jamur yang menghambat pertumbuhan Penicillium",
+   "Penemuan penisilin terjadi melalui eksperimen yang terencana secara sistematis sejak awal"
+ ], correct:2,
+ explain:"Teks menjelaskan bahwa Penicillium (jamur) menghasilkan zat (penisilin) yang menghambat pertumbuhan bakteri Staphylococcus; ini adalah temuan tidak sengaja yang kemudian dikembangkan menjadi antibiotik."
+});
+
+/* ================== STATE ================== */
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let startTime = null;
+let timerInterval = null;
+
+/* ================== DOM refs ================== */
+const inpNama = document.getElementById('inpNama');
+const inpKelas = document.getElementById('inpKelas');
+const btnStart = document.getElementById('btnStart');
+const screenStart = document.getElementById('screenStart');
+const screenQuiz = document.getElementById('screenQuiz');
+const screenResult = document.getElementById('screenResult');
+
+const barNama = document.getElementById('barNama');
+const barKelas = document.getElementById('barKelas');
+const barMulai = document.getElementById('barMulai');
+const barDurasi = document.getElementById('barDurasi');
+
+function updateStartButton(){
+  btnStart.disabled = !(inpNama.value.trim().length>0 && inpKelas.value.trim().length>0);
+}
+inpNama.addEventListener('input', updateStartButton);
+inpKelas.addEventListener('input', updateStartButton);
+
+function pad(n){return n.toString().padStart(2,'0');}
+function formatDuration(ms){
+  const totalSec = Math.floor(ms/1000);
+  const h = Math.floor(totalSec/3600);
+  const m = Math.floor((totalSec%3600)/60);
+  const s = totalSec%60;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+function formatClock(d){
+  return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) +
+         " · " + d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+btnStart.addEventListener('click', () => {
+  barNama.textContent = inpNama.value.trim();
+  barKelas.textContent = inpKelas.value.trim();
+  startTime = new Date();
+  barMulai.textContent = formatClock(startTime);
+  timerInterval = setInterval(()=>{
+    barDurasi.textContent = formatDuration(new Date() - startTime);
+  }, 1000);
+
+  screenStart.classList.add('hidden');
+  screenQuiz.classList.remove('hidden');
+  renderQuestion();
+});
+
+/* ================== QUIZ RENDER ================== */
+const qTopic = document.getElementById('qTopic');
+const qText = document.getElementById('qText');
+const qOptions = document.getElementById('qOptions');
+const qExplain = document.getElementById('qExplain');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const LETTERS = ['A','B','C','D','E'];
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  qTopic.textContent = item.topic;
+  qText.textContent = item.q;
+  qOptions.innerHTML = '';
+  qExplain.classList.remove('show');
+  qExplain.textContent = '';
+
+  item.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<div class="tag">${LETTERS[idx]}</div><div class="txt">${opt}</div>`;
+    div.addEventListener('click', () => selectAnswer(idx));
+    qOptions.appendChild(div);
+  });
+
+  const chosen = answers[current];
+  if(chosen !== null){
+    lockOptions(chosen);
+  }
+
+  progressFill.style.width = `${((current+1)/QUESTIONS.length)*100}%`;
+  progressText.textContent = `Soal ${current+1} / ${QUESTIONS.length}`;
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = chosen === null;
+  btnNext.textContent = current === QUESTIONS.length-1 ? 'Selesai & lihat hasil' : 'Soal berikutnya →';
+}
+
+function selectAnswer(idx){
+  if(answers[current] !== null) return; // sudah dijawab, kunci
+  answers[current] = idx;
+  lockOptions(idx);
+  btnNext.disabled = false;
+}
+
+function lockOptions(chosenIdx){
+  const item = QUESTIONS[current];
+  const optDivs = qOptions.querySelectorAll('.option');
+  optDivs.forEach((div, idx) => {
+    div.classList.add('disabled');
+    if(idx === item.correct) div.classList.add('correct');
+    if(idx === chosenIdx && chosenIdx !== item.correct) div.classList.add('wrong');
+    if(idx === chosenIdx) div.classList.add('selected');
+  });
+  qExplain.textContent = (chosenIdx === item.correct ? '✓ Benar. ' : '✗ Kurang tepat. ') + item.explain;
+  qExplain.classList.add('show');
+}
+
+btnPrev.addEventListener('click', () => {
+  if(current>0){ current--; renderQuestion(); }
+});
+btnNext.addEventListener('click', () => {
+  if(current < QUESTIONS.length-1){
+    current++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+});
+
+/* ================== RESULT ================== */
+function finishQuiz(){
+  clearInterval(timerInterval);
+  const endTime = new Date();
+  const durationMs = endTime - startTime;
+
+  let benar = 0;
+  QUESTIONS.forEach((item, idx) => { if(answers[idx] === item.correct) benar++; });
+  const salah = QUESTIONS.length - benar;
+
+  document.getElementById('resScore').textContent = benar;
+  document.getElementById('resBenar').textContent = benar;
+  document.getElementById('resSalah').textContent = salah;
+  document.getElementById('resWaktu').textContent = formatDuration(durationMs);
+
+  const pct = Math.round((benar/QUESTIONS.length)*100);
+  let ket;
+  if(pct>=85) ket = "Luar biasa — setara level kompetitif OSN/POSI.";
+  else if(pct>=70) ket = "Baik — pemahaman materi kelas X–XII cukup kuat.";
+  else if(pct>=50) ket = "Cukup — masih perlu memperdalam beberapa topik.";
+  else ket = "Perlu belajar lebih giat lagi, terutama pada topik yang sering salah.";
+  document.getElementById('resSub').textContent = `${pct}% jawaban benar. ${ket}`;
+
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  QUESTIONS.forEach((item, idx) => {
+    const ok = answers[idx] === item.correct;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `<div class="dot ${ok?'ok':'no'}"></div><div>Soal ${idx+1} · ${item.topic} — ${ok ? 'Benar' : 'Salah (jawaban benar: '+LETTERS[item.correct]+')'}</div>`;
+    reviewList.appendChild(div);
+  });
+
+  screenQuiz.classList.add('hidden');
+  screenResult.classList.remove('hidden');
+  barDurasi.textContent = formatDuration(durationMs);
+}
+</script>
+</body>
+</html>
